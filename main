@@ -1,0 +1,176 @@
+//This program creates an array of random strings of a size specified by the user and sorts the list using selection, merge, and c++ sort. The program then times each method, using both cpu and clock time.
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+//name randomization function
+string* nameFunction(int j, string inputArray[])
+{
+	string a,b,c,d;
+	int i;
+	srand(time(0));
+	//Loop to fill each position, generates random characters and places them
+	//together in a string, creating a "name"
+	for(i=0; i<j; i++)
+	{
+		a=static_cast<char>(65+rand()%26);
+		b=static_cast<char>(65+rand()%26);
+		c=static_cast<char>(65+rand()%26);
+		d=static_cast<char>(65+rand()%26);
+		//creates string from chars
+		inputArray[i]=a+b+c+d;
+	}
+	return inputArray;
+}
+
+class Sorter{
+	public:
+	Sorter(){
+		
+	}
+	//selection sort function
+	void selectionSort(string inputArray[], int arraySize) 
+	{
+	    int startPosition, minPosition, k;
+	    string minName;
+	    for(startPosition = 0; startPosition < (arraySize - 1); startPosition++) 
+	    {
+		minPosition=startPosition;
+		minName=inputArray[startPosition];
+		for(k=(startPosition + 1); k<arraySize; k++) 
+		{
+		    if(inputArray[k] < minName)
+		    {
+		        minName=inputArray[k];
+		        minPosition=k;
+		    }
+		}
+		inputArray[minPosition]=inputArray[startPosition];
+		inputArray[startPosition]=minName;
+	    }
+	}
+
+	//merge sort function
+	void mergeSort(string stringArray[], int arraySize)
+	{
+		if(arraySize>1)
+		{
+			//merge sort the 1st half
+			string* firstHalf=new string[arraySize/2];
+			arrayCopy(stringArray, 0, firstHalf, 0, arraySize/2);
+			mergeSort(firstHalf,arraySize/2);
+			//merge sort 2nd half
+			int secondHalfLen=arraySize-arraySize/2;
+			string* secondHalf=new string[secondHalfLen];
+			arrayCopy(stringArray, arraySize/2, secondHalf, 0, secondHalfLen);
+			mergeSort(secondHalf, secondHalfLen);
+			//merge first half with second half
+			merge(firstHalf, arraySize/2, secondHalf, secondHalfLen, stringArray);
+			delete [] firstHalf;
+			delete [] secondHalf;
+		}
+	}
+
+	//array copying function for merge
+	void arrayCopy(string source[],int sourceStartIndex, string target[],int targetStartIndex, int length)
+	{
+		for(int i=0; i<length; i++)
+		{
+			target[i+targetStartIndex]=source[i+sourceStartIndex];
+		}
+	}
+
+	//merge function for merge sort
+	void merge(string list1[], int list1Size, string list2[], int list2Size, string temp[])
+	{
+		//current indexes
+		int current1=0;
+		int current2=0;
+		int currentTemp=0;
+		while(current1<list1Size&&current2<list2Size)
+		{
+			if(list1[current1]<list2[current2])
+			{
+				temp[currentTemp++]=list1[current1++];
+			}
+			else
+			{
+				temp[currentTemp++]=list2[current2++];
+			}
+		}
+		while(current1<list1Size)
+		{
+			temp[currentTemp++]=list1[current1++];
+		}
+		while(current2<list2Size)
+		{
+			temp[currentTemp++]=list2[current2++];
+		}
+	}
+};
+
+int main()
+{
+	cout << fixed;
+	//object creator
+	Sorter SortClass;
+	//time calculation variables
+	float cpuTimeInitial,cpuTimeFinal,cpuTimeTotal1,cpuTimeTotal2,cpuTimeTotal3;
+	float timeInitial,timeFinal,timeTotal1,timeTotal2,timeTotal3;
+	//input var
+	int sizeInput;
+	//gets size input
+	cout << "Enter Array Size: ";
+	cin >> sizeInput;
+	while(sizeInput>0){
+		//array to be made/sorted
+		string nameArray1[sizeInput];
+		string nameArray2[sizeInput];
+		string nameArray3[sizeInput];
+		//sorted array pointer
+		string* sortedArray1;
+		string* sortedArray2;
+		string* sortedArray3;
+		//calls listbuilding/sort function
+		sortedArray1=nameFunction(sizeInput,nameArray1);
+		sortedArray2=nameFunction(sizeInput,nameArray2);
+		sortedArray3=nameFunction(sizeInput,nameArray3);
+		//selection sort function
+		timeInitial = time(0);
+		cpuTimeInitial = clock();
+		SortClass.selectionSort(sortedArray1,sizeInput);
+		//time calculations
+		timeFinal = time(0);
+		cpuTimeFinal = clock();
+		timeTotal1=timeFinal-timeInitial;
+		cpuTimeTotal1=(cpuTimeFinal-cpuTimeInitial)/1000000.0;
+		//merge sort function
+		timeInitial = time(0);
+		cpuTimeInitial = clock();
+		SortClass.mergeSort(sortedArray2,sizeInput);
+		//time calculations
+		timeFinal = time(0);
+		cpuTimeFinal = clock();
+		timeTotal2=timeFinal-timeInitial;
+		cpuTimeTotal2=(cpuTimeFinal-cpuTimeInitial)/1000000.0;
+		//c++ sort function
+		timeInitial = time(0);
+		cpuTimeInitial = clock();
+timeTotal2=timeFinal-timeInitial;
+		cpuTimeTotal2=(cpuTimeFinal-cpuTimeInitial)/1000000.0;
+		//c++ sort function
+		timeInitial = time(0);
+		cpuTimeInitial = clock();
+		sort(sortedArray3,sortedArray3+sizeInput);
+		//time calculations
+		timeFinal = time(0);
+		cpuTimeFinal = clock();
+		timeTotal3=timeFinal-timeInitial;
+		cpuTimeTotal3=(cpuTimeFinal-cpuTimeInitial)/1000000.0;
+		cout << "-Selection Sort-\n" << "Clock Timer: " << timeTotal1 << " seconds" << endl << "CPU Timer: " << cpuTimeTotal1 << " seconds\n" << endl;
+		cout << "-Merge Sort-\n" << "Clock Timer: " << timeTotal2 << " seconds" << endl << "CPU Timer: " << cpuTimeTotal2 << " seconds\n" << endl;
+		cout << "-C++ Sort-\n" << "Clock Timer: " << timeTotal3 << " seconds" << endl << "CPU Timer: " << cpuTimeTotal3 << " seconds\n" << endl;
+		cout << "Enter Another Array Size Or Input 0 To Escape: ";
+		cin >> sizeInput;
+	}
+	return 0;
+}
